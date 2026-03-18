@@ -1,0 +1,35 @@
+package com.example.Talentscope.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
+import java.util.UUID;
+
+@Entity
+@Table(name = "users")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+
+public class User {
+    
+    @Id
+    @GeneratedValue
+    @Column(name = "id", updatable = false, nullable = false)
+    @Builder.Default
+    private UUID id = UUID.randomUUID();
+    
+    @Column(name = "email", unique = true, nullable = false)
+    private String email;
+    
+    @Column(name = "password", nullable = false)
+    private String password;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+}
