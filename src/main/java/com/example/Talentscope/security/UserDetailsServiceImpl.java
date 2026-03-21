@@ -16,7 +16,7 @@ import java.util.Collections;
 public class UserDetailsServiceImpl implements UserDetailsService {
     
     private final UserRepository userRepository;
-    
+
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User user = userRepository.findByEmail(email)
