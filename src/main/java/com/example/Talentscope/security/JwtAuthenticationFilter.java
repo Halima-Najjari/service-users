@@ -23,28 +23,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
     
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-            throws ServletException, IOException {
-        
-        String token = getTokenFromRequest(request);
-        
-        if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
-            String email = jwtUtil.extractEmail(token);
-            
-            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-            
-            UsernamePasswordAuthenticationToken authentication = 
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-            
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-        
+   @Override
+    protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain filterChain)
+        throws ServletException, IOException {
+
+    String path = request.getServletPath();
+
+    // ✅ Skip auth endpoints - NO JWT required for login/register
+    if (path.startsWith("/api/auth")) {
         filterChain.doFilter(request, response);
+        return;
     }
-    
+
+    String token = getTokenFromRequest(request);
+
+    if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
+        String email = jwtUtil.extractEmail(token);
+
+        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    filterChain.doFilter(request, response);
+}
     private String getTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         
@@ -54,4 +63,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         
         return null;
     }
+    
 }

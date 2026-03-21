@@ -1,7 +1,7 @@
 package com.example.Talentscope.entity;
 
 public enum Role {
-    SUPER_ADMIN,
+    ADMIN,
     RH,
     ENCADRANT,
     STAGIAIRE
