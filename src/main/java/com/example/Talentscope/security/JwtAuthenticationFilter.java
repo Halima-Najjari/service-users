@@ -30,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throws ServletException, IOException {
 
     String path = request.getServletPath();
+    System.out.println("🔍 JWT Filter - Path: " + path);
 
     // ✅ Skip auth endpoints - NO JWT required for login/register
     if (path.startsWith("/api/auth")) {
@@ -38,11 +39,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     String token = getTokenFromRequest(request);
+    System.out.println("🔑 JWT Filter - Token: " + (token != null ? "Present" : "Missing"));
 
     if (StringUtils.hasText(token) && jwtUtil.validateToken(token)) {
         String email = jwtUtil.extractEmail(token);
+        System.out.println("📧 JWT Filter - Email extracted: " + email);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        System.out.println("✅ JWT Filter - User loaded: " + userDetails.getUsername());
 
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
@@ -50,6 +54,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        System.out.println("🔐 JWT Filter - Authentication set in context");
+    } else {
+        System.out.println("❌ JWT Filter - Token validation failed");
     }
 
     filterChain.doFilter(request, response);
