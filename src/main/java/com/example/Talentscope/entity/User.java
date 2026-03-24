@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 
 import java.util.UUID;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -34,4 +35,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "encadrant_id")
+    private User encadrant;
+    
+    @OneToMany(mappedBy = "encadrant", fetch = FetchType.LAZY)
+    private List<User> stagiaires;
 }
