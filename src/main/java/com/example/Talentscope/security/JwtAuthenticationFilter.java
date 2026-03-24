@@ -32,12 +32,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     String path = request.getServletPath();
     System.out.println("🔍 JWT Filter - Path: " + path);
 
-    // ✅ Skip auth endpoints - NO JWT required for login/register
+    // ✅ Skip auth endpoints - NO JWT required for login, register, and refresh
     if (path.startsWith("/api/auth")) {
+        System.out.println("✅ JWT Filter - Skipping auth endpoint: " + path);
         filterChain.doFilter(request, response);
         return;
     }
 
+    // 🔐 For all other endpoints, JWT is required
     String token = getTokenFromRequest(request);
     System.out.println("🔑 JWT Filter - Token: " + (token != null ? "Present" : "Missing"));
 
@@ -56,7 +58,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         System.out.println("🔐 JWT Filter - Authentication set in context");
     } else {
-        System.out.println("❌ JWT Filter - Token validation failed");
+        System.out.println("❌ JWT Filter - Token validation failed or missing");
+        // Ne pas bloquer ici, laisser Spring Security gérer l'accès refusé
     }
 
     filterChain.doFilter(request, response);
