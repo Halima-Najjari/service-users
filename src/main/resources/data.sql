@@ -6,4 +6,12 @@ INSERT INTO users (id, email, password, role) VALUES (
     '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
     'SUPER_ADMIN'
 );
+
+-- Insert test candidates
+INSERT INTO candidates (id, first_name, last_name, email, phone, status) VALUES 
+('11111111-1111-1111-1111-111111111111', 'John', 'Doe', 'john.doe@email.com', '+1234567890', 'PENDING'),
+('22222222-2222-2222-2222-222222222222', 'Jane', 'Smith', 'jane.smith@email.com', '+0987654321', 'INTERVIEW'),
+('33333333-3333-3333-3333-333333333333', 'Bob', 'Wilson', 'bob.wilson@email.com', '+1122334455', 'HIRED'),
+('44444444-4444-4444-4444-444444444444', 'Alice', 'Brown', 'alice.brown@email.com', '+5566778899', 'REJECTED');
+
 DELETE FROM users WHERE role = 'ADMIN';
