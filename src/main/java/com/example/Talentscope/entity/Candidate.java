@@ -36,4 +36,7 @@ public class Candidate {
     @Column(name = "status", nullable = false)
     @Builder.Default
     private CandidateStatus status = CandidateStatus.PENDING;
+    
+    @Column(name = "cv_path")
+    private String cvPath;
 }
