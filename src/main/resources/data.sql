@@ -15,3 +15,22 @@ INSERT INTO candidates (id, first_name, last_name, email, phone, status) VALUES
 ('44444444-4444-4444-4444-444444444444', 'Alice', 'Brown', 'alice.brown@email.com', '+5566778899', 'REJECTED');
 
 DELETE FROM users WHERE role = 'ADMIN';
+
+{
+  "email": "stagiaire@talentscope.com",
+  "password": "stagiaire123",
+  "role": "STAGIAIRE",
+  "encadrantId": "encadrant-uuid"
+}
+
+{
+  "email": "encadrant@talentscope.com",
+  "password": "encadrant123",
+  "role": "ENCADRANT"
+}
+
+{
+  "email": "rh@talentscope.com",
+  "password": "rh123",
+  "role": "RH"
+}

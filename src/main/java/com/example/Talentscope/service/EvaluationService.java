@@ -20,19 +20,34 @@ public class EvaluationService {
     private final UserRepository userRepository;
 
     public Evaluation createEvaluation(EvaluationRequest request, User currentUser) {
-        User stagiaire = userRepository.findById(request.getStagiaireId())
-                .orElseThrow(() -> new RuntimeException("Stagiaire non trouvé"));
+        System.out.println("Creating evaluation with request: " + request);
+        System.out.println("Current user: " + currentUser.getEmail() + " (ID: " + currentUser.getId() + ")");
+        
+        User stagiaire = userRepository.findByIdWithEncadrant(request.getStagiaireId())
+                .orElseThrow(() -> {
+                    System.err.println("Stagiaire non trouvé avec ID: " + request.getStagiaireId());
+                    return new RuntimeException("Stagiaire non trouvé");
+                });
 
         User encadrant = userRepository.findById(request.getEncadrantId())
-                .orElseThrow(() -> new RuntimeException("Encadrant non trouvé"));
+                .orElseThrow(() -> {
+                    System.err.println("Encadrant non trouvé avec ID: " + request.getEncadrantId());
+                    return new RuntimeException("Encadrant non trouvé");
+                });
+
+        System.out.println("Found stagiaire: " + stagiaire.getEmail() + " (ID: " + stagiaire.getId() + ")");
+        System.out.println("Found encadrant: " + encadrant.getEmail() + " (ID: " + encadrant.getId() + ")");
+        System.out.println("Stagiaire's encadrant: " + (stagiaire.getEncadrant() != null ? stagiaire.getEncadrant().getEmail() : "NULL"));
 
         // Vérifier que le stagiaire est bien assigné à cet encadrant
         if (stagiaire.getEncadrant() == null || !stagiaire.getEncadrant().getId().equals(encadrant.getId())) {
+            System.err.println("Ce stagiaire n'est pas assigné à cet encadrant");
             throw new RuntimeException("Ce stagiaire n'est pas assigné à cet encadrant");
         }
 
         // Vérifier les permissions
         if (!canCreateEvaluation(currentUser, encadrant, stagiaire)) {
+            System.err.println("Permissions insuffisantes pour créer cette évaluation");
             throw new RuntimeException("Permissions insuffisantes pour créer cette évaluation");
         }
 
@@ -113,24 +128,41 @@ public class EvaluationService {
     }
 
     private boolean canCreateEvaluation(User currentUser, User encadrant, User stagiaire) {
+        System.out.println("Checking permissions for user: " + currentUser.getEmail() + " with role: " + currentUser.getRole());
+        System.out.println("Target encadrant: " + encadrant.getEmail() + " (ID: " + encadrant.getId() + ")");
+        System.out.println("Target stagiaire: " + stagiaire.getEmail() + " (ID: " + stagiaire.getId() + ")");
+        System.out.println("Current user ID: " + currentUser.getId());
+        System.out.println("Stagiaire's encadrant: " + (stagiaire.getEncadrant() != null ? stagiaire.getEncadrant().getEmail() + " (ID: " + stagiaire.getEncadrant().getId() + ")" : "NULL"));
+        
         // ADMIN peut créer toutes les évaluations
         if (currentUser.getRole() == com.example.Talentscope.entity.Role.ADMIN) {
+            System.out.println("Permission granted: User is ADMIN");
             return true;
         }
 
         // RH peut créer toutes les évaluations
         if (currentUser.getRole() == com.example.Talentscope.entity.Role.RH) {
+            System.out.println("Permission granted: User is RH");
             return true;
         }
 
         // Un encadrant ne peut créer que des évaluations pour ses propres stagiaires
         if (currentUser.getRole() == com.example.Talentscope.entity.Role.ENCADRANT) {
-            return currentUser.getId().equals(encadrant.getId()) && 
-                   stagiaire.getEncadrant() != null && 
-                   stagiaire.getEncadrant().getId().equals(currentUser.getId());
+            boolean sameEncadrant = currentUser.getId().equals(encadrant.getId());
+            boolean hasEncadrantAssigned = stagiaire.getEncadrant() != null;
+            boolean assignedToCurrentUser = hasEncadrantAssigned && stagiaire.getEncadrant().getId().equals(currentUser.getId());
+            
+            System.out.println("Permission check for ENCADRANT:");
+            System.out.println("  - Same encadrant: " + sameEncadrant);
+            System.out.println("  - Stagiaire has encadrant assigned: " + hasEncadrantAssigned);
+            System.out.println("  - Assigned to current user: " + assignedToCurrentUser);
+            System.out.println("  - Final result: " + (sameEncadrant && hasEncadrantAssigned && assignedToCurrentUser));
+            
+            return sameEncadrant && hasEncadrantAssigned && assignedToCurrentUser;
         }
 
         // Un stagiaire ne peut pas créer d'évaluations
+        System.out.println("Permission denied: User is STAGIAIRE or unknown role");
         return false;
     }
 

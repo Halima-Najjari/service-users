@@ -28,9 +28,12 @@ public class EvaluationController {
             @AuthenticationPrincipal User currentUser) {
         
         try {
+            System.out.println("Controller: Received evaluation creation request");
             Evaluation evaluation = evaluationService.createEvaluation(request, currentUser);
             return ResponseEntity.ok(evaluation);
         } catch (RuntimeException e) {
+            System.err.println("Controller error creating evaluation: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().build();
         }
     }

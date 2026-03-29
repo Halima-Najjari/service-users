@@ -22,7 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('RH')")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserRequest request) {
         try {
             User user = userService.createUser(request);

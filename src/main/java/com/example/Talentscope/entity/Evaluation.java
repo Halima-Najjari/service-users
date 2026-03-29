@@ -1,5 +1,6 @@
 package com.example.Talentscope.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,10 +28,12 @@ public class Evaluation {
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "stagiaire_id", nullable = false)
+    @JsonIgnoreProperties({"stagiaires", "encadrant"})
     private User stagiaire;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "encadrant_id", nullable = false)
+    @JsonIgnoreProperties({"stagiaires", "encadrant"})
     private User encadrant;
     
     @Column(name = "ai_score")
