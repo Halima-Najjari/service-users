@@ -3,6 +3,7 @@ package com.example.Talentscope.controller;
 import com.example.Talentscope.dto.EvaluationRequest;
 import com.example.Talentscope.entity.Evaluation;
 import com.example.Talentscope.entity.User;
+import com.example.Talentscope.repository.UserRepository;
 import com.example.Talentscope.service.EvaluationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.UUID;
 public class EvaluationController {
 
     private final EvaluationService evaluationService;
+    private final UserRepository userRepository;
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN') or hasRole('RH') or hasRole('ENCADRANT')")
@@ -53,9 +55,9 @@ public class EvaluationController {
             @PathVariable UUID stagiaireId,
             @AuthenticationPrincipal User currentUser) {
         
-        // Récupérer le stagiaire depuis le service pour validation
         try {
-            User stagiaire = User.builder().id(stagiaireId).build();
+            User stagiaire = userRepository.findByIdWithEncadrant(stagiaireId)
+                    .orElseThrow(() -> new RuntimeException("Stagiaire non trouvé"));
             List<Evaluation> evaluations = evaluationService.getEvaluationsForStagiaire(stagiaire, currentUser);
             return ResponseEntity.ok(evaluations);
         } catch (RuntimeException e) {
