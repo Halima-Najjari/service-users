@@ -106,7 +106,7 @@ public class EvaluationController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN') or hasRole('RH')")
     public ResponseEntity<List<Evaluation>> getAllEvaluations() {
-        // Pour admin/RH - implémenter si nécessaire
-        return ResponseEntity.ok(List.of());
+        List<Evaluation> evaluations = evaluationService.getAllEvaluations();
+        return ResponseEntity.ok(evaluations);
     }
 }
