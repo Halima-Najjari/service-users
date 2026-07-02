@@ -25,7 +25,7 @@ public class FileStorageService {
 
     public String storeFile(MultipartFile file, String candidateId) {
         // Validation du type de fichier
-        if (!file.getContentType().equals("application/pdf")) {
+        if (!"application/pdf".equals(file.getContentType())) {
             throw new RuntimeException("Only PDF files are allowed");
         }
 

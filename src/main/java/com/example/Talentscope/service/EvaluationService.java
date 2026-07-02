@@ -116,6 +116,10 @@ public class EvaluationService {
         return evaluationRepository.save(evaluation);
     }
 
+    public List<Evaluation> getAllEvaluations() {
+        return evaluationRepository.findAll();
+    }
+
     public void deleteEvaluation(UUID evaluationId, User currentUser) {
         Evaluation evaluation = evaluationRepository.findById(evaluationId)
                 .orElseThrow(() -> new RuntimeException("Évaluation non trouvée"));

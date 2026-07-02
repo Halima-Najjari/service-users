@@ -4,6 +4,7 @@ import com.example.Talentscope.entity.RefreshToken;
 import com.example.Talentscope.entity.User;
 import com.example.Talentscope.repository.RefreshTokenRepository;
 import com.example.Talentscope.repository.UserRepository;
+import com.example.Talentscope.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ public class RefreshTokenService {
 
     private final RefreshTokenRepository refreshTokenRepository;
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
 
     @Value("${jwt.refresh-expiration:604800000}") // 7 jours par défaut
     private Long refreshExpiration;
@@ -70,8 +72,6 @@ public class RefreshTokenService {
     }
 
     private String generateNewAccessToken(User user) {
-        // Utiliser le JwtUtil existant pour générer un nouveau token
-        // Note: Cette méthode devrait être injectée ou déplacée vers JwtUtil
-        return "new_access_token_for_" + user.getEmail();
+        return jwtUtil.generateToken(user.getId(), user.getEmail(), user.getRole().name());
     }
 }
