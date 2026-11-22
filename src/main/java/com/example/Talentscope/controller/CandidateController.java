@@ -24,7 +24,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/candidates")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CandidateController {
     
     private final CandidateRepository candidateRepository;

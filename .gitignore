@@ -31,3 +31,14 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.env
+.env.*
+!.env.example
+application-local.properties
+application-*.local.properties
+
+uploads/cvs/*
+
+node_modules/
+dist/
