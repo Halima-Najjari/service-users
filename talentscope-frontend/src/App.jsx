@@ -10,6 +10,7 @@ import CandidateRoutePlaceholder from "./features/admin/CandidateRoutePlaceholde
 import CandidatesPage from "./features/admin/CandidatesPage";
 import CandidateDetailsPage from "./features/admin/CandidateDetailsPage";
 import CandidateCreatePage from "./features/admin/CandidateCreatePage";
+import CandidateEditPage from "./features/admin/CandidateEditPage";
 
 function App() {
   return (
@@ -36,6 +37,10 @@ function App() {
             />
             <Route
               path="/admin/candidats/:candidateId/modifier"
+              element={<CandidateEditPage />}
+            />
+            <Route
+              path="/admin/candidats/:candidateId/voir"
               element={<CandidateRoutePlaceholder />}
             />
           </Route>
