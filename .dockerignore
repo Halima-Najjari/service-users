@@ -1,0 +1,13 @@
+.git
+.gitignore
+target/
+**/target/
+uploads/
+**/uploads/
+node_modules/
+**/node_modules/
+**/dist/
+.env
+.env.*
+**/application-local.properties
+**/application-*.local.properties
