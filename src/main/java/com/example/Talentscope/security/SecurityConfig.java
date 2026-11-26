@@ -65,24 +65,37 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            "http://localhost:5174",
-            "http://127.0.0.1:5174"
-            "https://service-users-talentscope-frontend.vercel.app"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
-        configuration.setExposedHeaders(List.of("Content-Disposition"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+    
+@Bean
+public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+    configuration.setAllowedOrigins(List.of(
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5174",
+        "https://service-users-talentscope-frontend.vercel.app"
+    ));
+
+    configuration.setAllowedMethods(List.of(
+        "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+    ));
+
+    configuration.setAllowedHeaders(List.of(
+        "Authorization", "Content-Type", "Accept"
+    ));
+
+    configuration.setExposedHeaders(List.of("Content-Disposition"));
+    configuration.setAllowCredentials(true);
+    configuration.setMaxAge(3600L);
+
+    UrlBasedCorsConfigurationSource source =
+        new UrlBasedCorsConfigurationSource();
+
+    source.registerCorsConfiguration("/**", configuration);
+
+    return source;
+}
+
 }
