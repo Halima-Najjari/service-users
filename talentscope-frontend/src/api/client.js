@@ -10,7 +10,9 @@ const STORAGE_KEYS = {
 };
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+  baseURL:
+    import.meta.env.VITE_API_BASE_URL ||
+    "https://service-users-production.up.railway.app",
   timeout: 15000,
   headers: { "Content-Type": "application/json" },
 });
@@ -57,7 +59,7 @@ async function refreshAccessToken() {
   if (!refreshPromise) {
     refreshPromise = axios
       .post(
-        `${import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"}${
+        `${import.meta.env.VITE_API_BASE_URL || "https://service-users-production.up.railway.app"}${
           API_ENDPOINTS.auth.refresh
         }`,
         { refreshToken },

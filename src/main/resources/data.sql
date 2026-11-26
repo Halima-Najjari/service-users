@@ -34,3 +34,10 @@ DELETE FROM users WHERE role = 'ADMIN';
   "password": "rh123",
   "role": "RH"
 }
+$bytes = New-Object byte[] 64
+$rng = New-Object System.Security.Cryptography.RNGCryptoServiceProvider
+$rng.GetBytes($bytes)
+$secret = [Convert]::ToBase64String($bytes)
+Set-Clipboard -Value $secret
+$rng.Dispose()
+Write-Host "JWT_SECRET generated and copied successfully!"

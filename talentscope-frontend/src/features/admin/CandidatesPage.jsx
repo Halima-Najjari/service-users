@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { Eye, FileText, Plus, Search } from "lucide-react";
+import { Eye, FileText, Plus, Search, Trash2 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getCandidates } from "../../api/candidates.api";
+import { deleteCandidate, getCandidates } from "../../api/candidates.api";
+import CandidateDeleteModal from "../../components/candidates/CandidateDeleteModal";
 import CandidateStatusBadge from "../../components/candidates/CandidateStatusBadge";
 import DataTable from "../../components/tables/DataTable";
 import { getHttpErrorMessage } from "../../utils/httpError";
@@ -16,6 +17,10 @@ export default function CandidatesPage() {
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("ALL");
+  const [candidateToDelete, setCandidateToDelete] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     let active = true;
@@ -39,6 +44,43 @@ export default function CandidatesPage() {
       active = false;
     };
   }, []);
+
+  function openDeleteModal(candidate) {
+    setCandidateToDelete(candidate);
+    setDeleteError("");
+  }
+
+  function closeDeleteModal() {
+    if (deleting) return;
+    setCandidateToDelete(null);
+    setDeleteError("");
+  }
+
+  async function confirmDelete() {
+    if (!candidateToDelete) return;
+
+    setDeleting(true);
+    setDeleteError("");
+    setSuccessMessage("");
+
+    try {
+      await deleteCandidate(candidateToDelete.id);
+      const refreshedCandidates = await getCandidates();
+      setCandidates(
+        Array.isArray(refreshedCandidates) ? refreshedCandidates : [],
+      );
+      const name =
+        [candidateToDelete.firstName, candidateToDelete.lastName]
+          .filter(Boolean)
+          .join(" ") || candidateToDelete.email;
+      setCandidateToDelete(null);
+      setSuccessMessage(`${name} a été supprimé avec succès.`);
+    } catch (requestError) {
+      setDeleteError(getHttpErrorMessage(requestError));
+    } finally {
+      setDeleting(false);
+    }
+  }
 
   const filteredCandidates = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -110,12 +152,22 @@ export default function CandidatesPage() {
       key: "actions",
       label: "Actions",
       render: (candidate) => (
-        <Link
-          to={`/admin/candidats/${candidate.id}`}
-          className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-        >
-          <Eye size={15} /> Détails
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to={`/admin/candidats/${candidate.id}`}
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 transition hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+          >
+            <Eye size={15} /> Détails
+          </Link>
+          <button
+            type="button"
+            onClick={() => openDeleteModal(candidate)}
+            className="grid h-9 w-9 place-items-center rounded-lg border border-red-100 text-red-600 transition hover:bg-red-50"
+            aria-label="Supprimer le candidat"
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
       ),
     },
   ];
@@ -139,21 +191,21 @@ export default function CandidatesPage() {
         </Link>
       </div>
 
-      {error && (
+      {(error || deleteError) && (
         <div
           role="alert"
           className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
         >
-          {error}
+          {error || deleteError}
         </div>
       )}
 
-      {location.state?.successMessage && (
+      {successMessage && (
         <div
           role="status"
           className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700"
         >
-          {location.state.successMessage}
+          {successMessage}
         </div>
       )}
 
@@ -206,6 +258,14 @@ export default function CandidatesPage() {
           />
         )}
       </section>
+
+      {candidateToDelete !== null && (
+        <CandidateDeleteModal
+          candidateId={candidateToDelete}
+          onClose={() => setCandidateToDelete(null)}
+          onDelete={handleDeleteCandidate}
+        />
+      )}
     </div>
   );
 }
