@@ -75,8 +75,9 @@ public CorsConfigurationSource corsConfigurationSource() {
         "http://127.0.0.1:5173",
         "http://localhost:5174",
         "http://127.0.0.1:5174",
-        "https://service-users-talentscope-frontend.vercel.app"
+        "https://service-users-talentscope-frontend.vercel.app",
         "https://service-users-liart.vercel.app"
+        
     ));
 
     configuration.setAllowedMethods(List.of(
