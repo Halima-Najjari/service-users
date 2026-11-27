@@ -191,7 +191,7 @@ export default function CandidatesPage() {
         </Link>
       </div>
 
-      {(error || deleteError) && (
+      {error && (
         <div
           role="alert"
           className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
@@ -259,13 +259,14 @@ export default function CandidatesPage() {
         )}
       </section>
 
-      {candidateToDelete !== null && (
-        <CandidateDeleteModal
-          candidateId={candidateToDelete}
-          onClose={() => setCandidateToDelete(null)}
-          onDelete={handleDeleteCandidate}
-        />
-      )}
+      <CandidateDeleteModal
+        candidate={candidateToDelete}
+        open={Boolean(candidateToDelete)}
+        deleting={deleting}
+        error={deleteError}
+        onCancel={closeDeleteModal}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

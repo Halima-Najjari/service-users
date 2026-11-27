@@ -104,7 +104,9 @@ export default function CandidateDetailsPage() {
     setCvSuccess("");
     setCvPreviewing(true);
 
-    const previewWindow = window.open("", "_blank", "noopener,noreferrer");
+    // Open the window immediately, while still inside the click event.
+    const previewWindow = window.open("about:blank", "_blank");
+
     if (!previewWindow) {
       setCvPreviewing(false);
       setCvError(
@@ -113,11 +115,21 @@ export default function CandidateDetailsPage() {
       return;
     }
 
+    // Prevent the new tab from accessing the original page.
+
     try {
       const blob = await downloadCandidateCv(candidateId);
-      const url = window.URL.createObjectURL(blob);
+      const pdfBlob =
+        blob.type === "application/pdf"
+          ? blob
+          : new Blob([blob], { type: "application/pdf" });
+
+      const url = window.URL.createObjectURL(pdfBlob);
       previewWindow.location.href = url;
-      window.setTimeout(() => window.URL.revokeObjectURL(url), 60_000);
+
+      window.setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+      }, 60_000);
     } catch (requestError) {
       previewWindow.close();
       setCvError(getHttpErrorMessage(requestError));
